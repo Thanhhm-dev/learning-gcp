@@ -47,30 +47,21 @@ steps:
     args:
       - "-c"
       - |
-        cd terraform && terraform init
+        cd env && terraform init
 
-  # 4.2 Terraform plan
-  - name: hashicorp/terraform
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: "bash"
     args:
-      [
-        "plan",
-        "-var-file=envs/prod/terraform.tfvars",
-        "-out=plan.out",
-      ]
-    dir: "terraform"
-    env:
-      - TF_LOG=DEBUG
+      - "-c"
+      - |
+        cd env && terraform plan -var-file=envs/prod/terraform.tfvars -out=plan.out
 
-  # 4.3 Terraform apply
-  - name: hashicorp/terraform
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: "bash"
     args:
-      [
-        "apply",
-        "plan.out",
-      ]
-    dir: "terraform"
-    env:
-      - TF_LOG=DEBUG
+      - "-c"
+      - |
+        cd env && terraform apply plan.out
 
 
 serviceAccount: "projects/${_PROJECT_ID}/serviceAccounts/cloud-build-sa@${_PROJECT_ID}.iam.gserviceaccount.com"

@@ -30,14 +30,14 @@ steps:
       ]
 
   # 4. Deploy lên Cloud Run bằng Terraform
-  - name: hashicorp/terraform:light
+  - name: hashicorp/terraform:1.5.7
     args:
       [
         "init",
       ]
     dir: "terraform"
 
-  - name: hashicorp/terraform:light
+  - name: hashicorp/terraform:1.5.7
     args:
       [
         "destroy",
@@ -45,6 +45,8 @@ steps:
         "-auto-approve",
       ]
     dir: "terraform"
+    env:
+      - TF_LOG=DEBUG
 
 
 serviceAccount: "projects/${_PROJECT_ID}/serviceAccounts/cloud-build-sa@${_PROJECT_ID}.iam.gserviceaccount.com"

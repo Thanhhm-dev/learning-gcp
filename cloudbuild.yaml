@@ -37,7 +37,7 @@ steps:
       - |
         cd terraform
         terraform init
-        terraform apply -var="project_id=$_PROJECT_ID" -var="location=$_LOCATION" -var="name=$_APP_NAME" -auto-approve
+        terraform destroy -var-file="envs/prod/terraform.tfvars" -auto-approve
 
 serviceAccount: "projects/${_PROJECT_ID}/serviceAccounts/cloud-build-sa@${_PROJECT_ID}.iam.gserviceaccount.com"
 

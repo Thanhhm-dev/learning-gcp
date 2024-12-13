@@ -46,6 +46,13 @@ steps:
     dir: "terraform"
     env:
       - TF_LOG=DEBUG
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        echo "Current directory: $(pwd)"
+        echo "Files in directory: $(ls -al)"
+        terraform plan -var-file=envs/prod/terraform.tfvars -out=plan.out
 
   # 4.3 Terraform apply
   - name: hashicorp/terraform

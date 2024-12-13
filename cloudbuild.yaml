@@ -1,11 +1,11 @@
 steps:
   # Bước 1: Tải tệp credentials từ Secret Manager
   - name: gcr.io/cloud-builders/gcloud
+    entrypoint: "bash"
     args:
-      - bash
-      - -c
+      - "-c"
       - |
-        # Lấy secret chứa credentials từ Secret Manager
+        # Lấy secret từ Secret Manager và lưu vào tệp
         gcloud secrets versions access latest --secret="google-credentials" > /workspace/google-credentials.json
         gcloud auth activate-service-account --key-file=/workspace/google-credentials.json
         gcloud config set project ${_PROJECT_ID}

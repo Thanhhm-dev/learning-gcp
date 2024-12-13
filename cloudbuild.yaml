@@ -40,7 +40,7 @@ steps:
   - name: hashicorp/terraform:1.5.7
     args:
       [
-        "destroy",
+        "apply",
         "-var-file=envs/prod/terraform.tfvars",
         "-auto-approve",
       ]

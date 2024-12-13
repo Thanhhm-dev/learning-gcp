@@ -31,13 +31,21 @@ steps:
 
   # 4. Deploy lên Cloud Run bằng Terraform
   - name: hashicorp/terraform:light
-    entrypoint: bash
+  args:
+    [
+      "init",
+    ]
+  dir: "terraform"
+
+  - name: hashicorp/terraform:light
     args:
-      - -c
-      - |
-        cd terraform
-        terraform init
-        terraform destroy -var-file="envs/prod/terraform.tfvars" -auto-approve
+      [
+        "destroy",
+        "-var-file=envs/prod/terraform.tfvars",
+        "-auto-approve",
+      ]
+    dir: "terraform"
+
 
 serviceAccount: "projects/${_PROJECT_ID}/serviceAccounts/cloud-build-sa@${_PROJECT_ID}.iam.gserviceaccount.com"
 

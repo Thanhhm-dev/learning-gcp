@@ -43,10 +43,11 @@ serviceAccount: "projects/${_PROJECT_ID}/serviceAccounts/cloud-build-sa@${_PROJE
 
 # Substitutions
 substitutions:
-  _PROJECT_ID: ""
-  _APP_NAME: ""
-  _LOCATION: ""
-  _WEB_IMAGE_URL: ""
+  _PROJECT_ID: "calcium-post-400103"
+  _APP_NAME: "hello-world-service"
+  _LOCATION: "asia-northeast1"
+  _WEB_IMAGE_URL: "asia-northeast1-docker.pkg.dev/calcium-post-400103/hello-world-service/web:latest"
+
 
 # Timeout cho build (tối đa 10 phút)
 options:

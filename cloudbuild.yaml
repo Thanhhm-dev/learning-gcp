@@ -47,21 +47,28 @@ steps:
     args:
       - "-c"
       - |
-        cd envs && terraform init
+        pwd
 
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: "bash"
     args:
       - "-c"
       - |
-        cd envs && terraform plan -var-file=envs/prod/terraform.tfvars -out=plan.out
+        cd terraform/envs && terraform init
 
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: "bash"
     args:
       - "-c"
       - |
-        cd envs && terraform apply plan.out
+        cd terraform/envs && terraform plan -var-file=envs/prod/terraform.tfvars -out=plan.out
+
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        cd terraform/envs && terraform apply plan.out
 
 
 serviceAccount: "projects/${_PROJECT_ID}/serviceAccounts/cloud-build-sa@${_PROJECT_ID}.iam.gserviceaccount.com"

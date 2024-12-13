@@ -1,0 +1,48 @@
+steps:
+  # 1. Xác thực với Google Cloud
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        gcloud auth activate-service-account --key-file=terraform/google-credentials.json
+        gcloud config set project $_PROJECT_ID
+
+  # 2. Build Docker Image
+  - name: gcr.io/cloud-builders/docker
+    args:
+      [
+        "build",
+        "--platform=linux/amd64",
+        "-t",
+        "${_WEB_IMAGE_URL}",
+        "."
+      ]
+
+  # 3. Push Docker Image lên Artifact Registry
+  - name: gcr.io/cloud-builders/docker
+    args:
+      [
+        "push",
+        "${_WEB_IMAGE_URL}"
+      ]
+
+  # 4. Deploy lên Cloud Run bằng Terraform
+  - name: hashicorp/terraform:light
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        cd terraform
+        terraform init
+        terraform apply -var="project_id=$_PROJECT_ID" -var="location=$_LOCATION" -var="name=$_APP_NAME" -auto-approve
+
+# Substitutions
+substitutions:
+  _PROJECT_ID: ""
+  _APP_NAME: ""
+  _LOCATION: ""
+  _WEB_IMAGE_URL: ""
+
+# Timeout cho build (tối đa 10 phút)
+timeout: "600s"

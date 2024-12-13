@@ -30,7 +30,11 @@ steps:
   #     ]
 
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: ['cp', 'terraform/*', '/workspace/terraform/']
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        cp terraform/* /workspace/terraform/
 
   # 4. Deploy lên Cloud Run bằng Terraform
   - name: hashicorp/terraform

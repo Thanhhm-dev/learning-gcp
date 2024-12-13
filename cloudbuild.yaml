@@ -31,11 +31,11 @@ steps:
 
   # 4. Deploy lên Cloud Run bằng Terraform
   - name: hashicorp/terraform:light
-  args:
-    [
-      "init",
-    ]
-  dir: "terraform"
+    args:
+      [
+        "init",
+      ]
+    dir: "terraform"
 
   - name: hashicorp/terraform:light
     args:

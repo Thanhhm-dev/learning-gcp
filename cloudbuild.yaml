@@ -30,7 +30,7 @@ steps:
       ]
 
   # 4. Deploy lên Cloud Run bằng Terraform
-- name: hashicorp/terraform:1.5.7
+  - name: hashicorp/terraform:1.5.7
     args:
       ["init"]
     dir: "terraform"

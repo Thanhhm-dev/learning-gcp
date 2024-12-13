@@ -39,6 +39,10 @@ steps:
     args:
       ["init"]
     dir: "terraform"
+  - name: hashicorp/terraform
+    args:
+      ["ls", "-la"]
+    dir: "terraform"
 
   # 4.2 Terraform plan
   - name: hashicorp/terraform

@@ -30,13 +30,13 @@ steps:
       ]
 
   # 4. Deploy lên Cloud Run bằng Terraform
-  - name: hashicorp/terraform:1.5.7
+  - name: hashicorp/terraform
     args:
       ["init"]
     dir: "terraform"
 
   # 4.2 Terraform plan
-  - name: hashicorp/terraform:1.5.7
+  - name: hashicorp/terraform
     args:
       [
         "plan",
@@ -44,9 +44,11 @@ steps:
         "-out=plan.out",
       ]
     dir: "terraform"
+    env:
+      - TF_LOG=DEBUG
 
   # 4.3 Terraform apply
-  - name: hashicorp/terraform:1.5.7
+  - name: hashicorp/terraform
     args:
       [
         "apply",

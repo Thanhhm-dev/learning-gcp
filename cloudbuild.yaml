@@ -5,7 +5,7 @@ steps:
     args:
       - -c
       - |
-        gcloud auth activate-service-account --key-file=terraform/google-credentials.json
+        gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
         gcloud config set project $_PROJECT_ID
 
   # 2. Build Docker Image
@@ -45,4 +45,6 @@ substitutions:
   _WEB_IMAGE_URL: ""
 
 # Timeout cho build (tối đa 10 phút)
+options:
+  logging: CLOUD_LOGGING_ONLY
 timeout: "600s"

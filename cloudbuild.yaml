@@ -11,52 +11,57 @@ steps:
         gcloud config set project ${_PROJECT_ID}
 
   # 2. Build Docker Image
-  - name: gcr.io/cloud-builders/docker
-    args:
-      [
-        "build",
-        "--platform=linux/amd64",
-        "-t",
-        "${_WEB_IMAGE_URL}",
-        "."
-      ]
+  # - name: gcr.io/cloud-builders/docker
+  #   args:
+  #     [
+  #       "build",
+  #       "--platform=linux/amd64",
+  #       "-t",
+  #       "${_WEB_IMAGE_URL}",
+  #       "."
+  #     ]
 
   # 3. Push Docker Image lên Artifact Registry
-  - name: gcr.io/cloud-builders/docker
+  # - name: gcr.io/cloud-builders/docker
+  #   args:
+  #     [
+  #       "push",
+  #       "${_WEB_IMAGE_URL}"
+  #     ]
+
+  # 4. Deploy lên Cloud Run bằng Terraform
+  - name: hashicorp/terraform
+    args:
+      ["destroy"]
+    dir: "terraform"
+
+  - name: hashicorp/terraform
+    args:
+      ["init"]
+    dir: "terraform"
+
+  # 4.2 Terraform plan
+  - name: hashicorp/terraform
     args:
       [
-        "push",
-        "${_WEB_IMAGE_URL}"
+        "plan",
+        "-var-file=envs/prod/terraform.tfvars",
+        "-out=plan.out",
       ]
+    dir: "terraform"
+    env:
+      - TF_LOG=DEBUG
 
-  # # 4. Deploy lên Cloud Run bằng Terraform
-  # - name: hashicorp/terraform
-  #   args:
-  #     ["init"]
-  #   dir: "terraform"
-
-  # # 4.2 Terraform plan
-  # - name: hashicorp/terraform
-  #   args:
-  #     [
-  #       "plan",
-  #       "-var-file=envs/prod/terraform.tfvars",
-  #       "-out=plan.out",
-  #     ]
-  #   dir: "terraform"
-  #   env:
-  #     - TF_LOG=DEBUG
-
-  # # 4.3 Terraform apply
-  # - name: hashicorp/terraform
-  #   args:
-  #     [
-  #       "apply",
-  #       "plan.out",
-  #     ]
-  #   dir: "terraform"
-  #   env:
-  #     - TF_LOG=DEBUG
+  # 4.3 Terraform apply
+  - name: hashicorp/terraform
+    args:
+      [
+        "apply",
+        "plan.out",
+      ]
+    dir: "terraform"
+    env:
+      - TF_LOG=DEBUG
 
 
 serviceAccount: "projects/${_PROJECT_ID}/serviceAccounts/cloud-build-sa@${_PROJECT_ID}.iam.gserviceaccount.com"

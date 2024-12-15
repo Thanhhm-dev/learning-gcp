@@ -10,84 +10,20 @@ steps:
         gcloud auth activate-service-account --key-file=/workspace/google-credentials.json
         gcloud config set project ${_PROJECT_ID}
 
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: "bash"
-    args:
-      - "-c"
-      - |
-        ls -la
+  # Bước 2: Build Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build',
+      '-t',
+      'asia-northeast1-docker.pkg.dev/calcium-post-400103/hello-world-service/web@sha256:40304e159419980446801a1e94d7afed0e2c90fb3d4f94c4a5ff29ca03a61f77',
+      '.'
+    ]
 
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: "bash"
-    args:
-      - "-c"
-      - |
-        ls -la /workspace
-
-  # 4. Deploy lên Cloud Run bằng Terraform
-  - name: hashicorp/terraform
-    entrypoint: 'sh'
-    args:
-      - "-c"
-      - |
-        ls -la
-
-  # 4.2 Terraform plan
-  - name: hashicorp/terraform
-    entrypoint: 'sh'
-    args:
-      - "-c"
-      - |
-        ls -la /workspace
-    dir: "terraform"
-    env:
-      - TF_LOG=DEBUG
-
-  - name: hashicorp/terraform
-    entrypoint: 'sh'
-    args:
-      - "-c"
-      - |
-        cd /workspace/terraform && terraform init
-    dir: "terraform"
-    env:
-      - TF_LOG=DEBUG
-
-  - name: hashicorp/terraform
-    entrypoint: 'sh'
-    args:
-      - "-c"
-      - |
-        cd /workspace/terraform
-        terraform plan -var-file="envs/prod/terraform.tfvars" -out=plan.out > /workspace/terraform_plan.log 2>&1 || (
-          echo "Terraform plan failed. Dumping logs:"
-          cat /workspace/terraform_plan.log
-          exit 1
-        )
-    dir: "terraform"
-    env:
-      - TF_LOG=DEBUG
-
-  - name: hashicorp/terraform
-    entrypoint: 'sh'
-    args:
-      - "-c"
-      - |
-        cd /workspace/terraform && terraform apply "plan.out"
-    dir: "terraform"
-    env:
-      - TF_LOG=DEBUG
-
-  # # 4.3 Terraform apply
-  # - name: hashicorp/terraform
-  #   args:
-  #     [
-  #       "apply",
-  #       "plan.out",
-  #     ]
-  #   dir: "terraform"
-  #   env:
-  #     - TF_LOG=DEBUG
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'push',
+      'asia-northeast1-docker.pkg.dev/calcium-post-400103/hello-world-service/web:latest'
+    ]
 
 
 serviceAccount: "projects/${_PROJECT_ID}/serviceAccounts/cloud-build-sa@${_PROJECT_ID}.iam.gserviceaccount.com"

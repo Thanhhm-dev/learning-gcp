@@ -12,18 +12,27 @@ steps:
 
   # Bước 2: Build Docker image
   - name: 'gcr.io/cloud-builders/docker'
-    args: [
-      'build',
-      '-t',
-      'asia-northeast1-docker.pkg.dev/calcium-post-400103/hello-world-service/web@sha256:40304e159419980446801a1e94d7afed0e2c90fb3d4f94c4a5ff29ca03a61f77',
-      '.'
-    ]
+    args: 
+      - 'build'
+      - '-t'
+      - 'asia-northeast1-docker.pkg.dev/calcium-post-400103/hello-world-service/web:latest'
+      - '.'
 
   - name: 'gcr.io/cloud-builders/docker'
-    args: [
-      'push',
-      'asia-northeast1-docker.pkg.dev/calcium-post-400103/hello-world-service/web:latest'
-    ]
+    args: 
+      - 'push'
+      - 'asia-northeast1-docker.pkg.dev/calcium-post-400103/hello-world-service/web:latest'
+  
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    args:
+      - 'gcloud'
+      - 'run'
+      - 'deploy'
+      - 'hello-world-service'
+      - '--image=asia-northeast1-docker.pkg.dev/calcium-post-400103/hello-world-service/web:latest'
+      - '--region=asia-northeast1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
 
 
 serviceAccount: "projects/${_PROJECT_ID}/serviceAccounts/cloud-build-sa@${_PROJECT_ID}.iam.gserviceaccount.com"

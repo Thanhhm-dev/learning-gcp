@@ -58,7 +58,7 @@ steps:
     args:
       - "-c"
       - |
-        cd /workspace/terraform && terraform plan -var-file="/workspace/terraform/envs/prod/terraform.tfvars" -out=plan.out
+        cd /workspace/terraform && terraform plan -var-file="envs/prod/terraform.tfvars" -out=plan.out
     dir: "terraform"
     env:
       - TF_LOG=DEBUG

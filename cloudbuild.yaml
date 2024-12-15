@@ -26,15 +26,15 @@ steps:
 
   # 4. Deploy lên Cloud Run bằng Terraform
   - name: hashicorp/terraform
-    entrypoint: "bash"
+    entrypoint: 'sh'
     args:
       - "-c"
       - |
-        ls -la /workspace
+        ls -la
 
   # 4.2 Terraform plan
   - name: hashicorp/terraform
-    entrypoint: "bash"
+    entrypoint: 'sh'
     args:
       - "-c"
       - |

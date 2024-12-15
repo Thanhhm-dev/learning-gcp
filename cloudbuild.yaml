@@ -22,7 +22,7 @@ steps:
     args:
       - "-c"
       - |
-        cp terraform/* /workspace/terraform/
+        ls -la /workspace
 
   # 4. Deploy lên Cloud Run bằng Terraform
   - name: hashicorp/terraform

@@ -26,32 +26,33 @@ steps:
 
   # 4. Deploy lên Cloud Run bằng Terraform
   - name: hashicorp/terraform
+    entrypoint: "bash"
     args:
-      ["init"]
-    dir: "terraform"
+      - "-c"
+      - |
+        ls -la /workspace
 
   # 4.2 Terraform plan
   - name: hashicorp/terraform
+    entrypoint: "bash"
     args:
-      [
-        "plan",
-        "-var-file=envs/prod/terraform.tfvars",
-        "-out=plan.out",
-      ]
+      - "-c"
+      - |
+        ls -la /workspace
     dir: "terraform"
     env:
       - TF_LOG=DEBUG
 
-  # 4.3 Terraform apply
-  - name: hashicorp/terraform
-    args:
-      [
-        "apply",
-        "plan.out",
-      ]
-    dir: "terraform"
-    env:
-      - TF_LOG=DEBUG
+  # # 4.3 Terraform apply
+  # - name: hashicorp/terraform
+  #   args:
+  #     [
+  #       "apply",
+  #       "plan.out",
+  #     ]
+  #   dir: "terraform"
+  #   env:
+  #     - TF_LOG=DEBUG
 
 
 serviceAccount: "projects/${_PROJECT_ID}/serviceAccounts/cloud-build-sa@${_PROJECT_ID}.iam.gserviceaccount.com"

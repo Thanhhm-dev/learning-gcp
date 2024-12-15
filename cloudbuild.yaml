@@ -58,7 +58,12 @@ steps:
     args:
       - "-c"
       - |
-        cd /workspace/terraform && terraform plan -var-file="envs/prod/terraform.tfvars" -out=plan.out
+        cd /workspace/terraform
+        terraform plan -var-file="envs/prod/terraform.tfvars" -out=plan.out > /workspace/terraform_plan.log 2>&1 || (
+          echo "Terraform plan failed. Dumping logs:"
+          cat /workspace/terraform_plan.log
+          exit 1
+        )
     dir: "terraform"
     env:
       - TF_LOG=DEBUG

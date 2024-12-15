@@ -48,16 +48,6 @@ steps:
     args:
       - "-c"
       - |
-        ls -la /workspace
-    dir: "terraform"
-    env:
-      - TF_LOG=DEBUG
-
-  - name: hashicorp/terraform
-    entrypoint: 'sh'
-    args:
-      - "-c"
-      - |
         cd /workspace/terraform && terraform init
     dir: "terraform"
     env:
@@ -68,7 +58,7 @@ steps:
     args:
       - "-c"
       - |
-        cd /workspace/terraform && terraform plan -var-file="terraform/envs/pro/terraform.tfvars" -out=plan.out
+        cd /workspace/terraform && terraform plan -var-file="./envs/pro/terraform.tfvars" -out=plan.out
     dir: "terraform"
     env:
       - TF_LOG=DEBUG

@@ -1,48 +1,52 @@
 steps:
-  # 1. Xác thực với Google Cloud
+  # Bước 1: Tải tệp credentials từ Secret Manager
   - name: gcr.io/cloud-builders/gcloud
-    entrypoint: bash
+    entrypoint: "bash"
     args:
-      - -c
+      - "-c"
       - |
-        gcloud auth activate-service-account --key-file=terraform/google-credentials.json
-        gcloud config set project $_PROJECT_ID
+        # Lấy secret từ Secret Manager và lưu vào tệp
+        gcloud secrets versions access latest --secret="google-credentials" > /workspace/google-credentials.json
+        gcloud auth activate-service-account --key-file=/workspace/google-credentials.json
+        gcloud config set project ${_PROJECT_ID}
 
-  # 2. Build Docker Image
-  - name: gcr.io/cloud-builders/docker
-    args:
-      [
-        "build",
-        "--platform=linux/amd64",
-        "-t",
-        "${_WEB_IMAGE_URL}",
-        "."
-      ]
+  # Bước 2: Build Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: 
+      - 'build'
+      - '-t'
+      - 'asia-northeast1-docker.pkg.dev/calcium-post-400103/hello-world-service/web:latest'
+      - '.'
 
-  # 3. Push Docker Image lên Artifact Registry
-  - name: gcr.io/cloud-builders/docker
+  - name: 'gcr.io/cloud-builders/docker'
+    args: 
+      - 'push'
+      - 'asia-northeast1-docker.pkg.dev/calcium-post-400103/hello-world-service/web:latest'
+  
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     args:
-      [
-        "push",
-        "${_WEB_IMAGE_URL}"
-      ]
+      - 'gcloud'
+      - 'run'
+      - 'deploy'
+      - 'hello-world-service'
+      - '--image=asia-northeast1-docker.pkg.dev/calcium-post-400103/hello-world-service/web:latest'
+      - '--region=asia-northeast1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
 
-  # 4. Deploy lên Cloud Run bằng Terraform
-  - name: hashicorp/terraform:light
-    entrypoint: bash
-    args:
-      - -c
-      - |
-        cd terraform
-        terraform init
-        terraform apply -var="project_id=$_PROJECT_ID" -var="location=$_LOCATION" -var="name=$_APP_NAME" -auto-approve
+
+serviceAccount: "projects/${_PROJECT_ID}/serviceAccounts/cloud-build-sa@${_PROJECT_ID}.iam.gserviceaccount.com"
 
 # Substitutions
 substitutions:
-  _PROJECT_ID: ""
-  _APP_NAME: ""
-  _LOCATION: ""
-  _WEB_IMAGE_URL: ""
+  _PROJECT_ID: "calcium-post-400103"
+  _APP_NAME: "hello-world-service"
+  _LOCATION: "asia-northeast1"
+  _WEB_IMAGE_URL: "asia-northeast1-docker.pkg.dev/calcium-post-400103/hello-world-service/web:latest"
+
 
 # Timeout cho build (tối đa 10 phút)
+options:
+  logging: CLOUD_LOGGING_ONLY
 timeout: "600s"
+
